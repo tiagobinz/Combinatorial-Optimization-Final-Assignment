@@ -4,9 +4,11 @@ using Formatting
 using BenchmarkTools
 
 # Read file (passed as command line argument)
+println("Reading file...")
 file_contents = readlines(ARGS[1])
 
 # Read the number of teams
+println("Parsing file...")
 n = parse(Int32, file_contents[1])
 splice!(file_contents, 1)   # Remove it from the array
 
@@ -29,28 +31,38 @@ for l in file_contents
     C[r, j, i] = c
 end
 
+# Eliminate the part below the main diagonal (otherwise the result would be doubled)
+for r in 1:n-1
+    for i in 1:n
+        for j in 1:i
+            C[r, i, j] = 0.0
+        end
+    end
+end
+
 # Create model
+println("Creating model...")
 m = Model()
 set_optimizer(m, GLPK.Optimizer)
 
 # Declare variables x_rij
+println("Declaring variables...")
 @variable(
     m,
     0 <= x[r=1:n-1, i=1:n, j=1:n] <= 1,
-    #x[r=1:n-1, i=1:n, j=1:n],
     Int
 )
 
 # Declare objective: minimize cost
+println("Declaring objective...")
 @objective(
     m,
     Min,
-
-    # It's divided by two because the matrix is redundant, symmetrical
-    sum(x[r, i, j]*C[r, i, j] for r in 1:n-1, i in 1:n, j in 1:n) / 2
+    sum(x[r, i, j]*C[r, i, j] for r in 1:n-1, i in 1:n, j in 1:n)
 )
 
 # Teams don't play against themselves
+println("Declaring constraints...")
 @constraint(m, sum(x[r, i, i] for r in 1:n-1, i in 1:n) == 0) 
 
 # Play against every other team exactly once
@@ -62,17 +74,10 @@ for i in 1:n
     end
 end
 
-# Every line should sum to 1
+# Every line should add to 1
 for r in 1:n-1
     for i in 1:n
         @constraint(m, sum(x[r, i, :]) == 1)
-    end
-end
-
-# Every column should sum to 1
-for r in 1:n-1
-    for j in 1:n
-        @constraint(m, sum(x[r,:,j]) == 1)
     end
 end
 
@@ -85,6 +90,7 @@ for r in 1:n-1
     end
 end
 
-#println(m)
+# Run the solver
+println("Optimizing...")
 @btime optimize!(m)
-printfmt("O custo mínimo é {:.2f}.\n",objective_value(m))
+printfmt("O custo mínimo é {:.2f}.\n", objective_value(m))

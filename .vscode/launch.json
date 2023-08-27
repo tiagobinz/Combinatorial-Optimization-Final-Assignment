@@ -9,7 +9,7 @@
             "stopOnEntry": false,
             "cwd": "${workspaceFolder}",
             "juliaEnv": "${command:activeJuliaEnvironment}",
-            "args": ["bin018_050_002.srr"]
+            "args": ["bin012_080_046.srr"]
         }
     ]
 }
