@@ -90,6 +90,9 @@ for r in 1:n-1
     end
 end
 
+# Set a time limit for the simulation
+set_time_limit_sec(m, 60.0)
+
 # Run the solver
 println("Optimizing...")
 @btime optimize!(m)
