@@ -96,4 +96,4 @@ set_time_limit_sec(m, 60.0)
 # Run the solver
 println("Optimizing...")
 @btime optimize!(m)
-printfmt("O custo mínimo é {:.2f}.\n", objective_value(m))
+printfmt("The best solution is {:.2f}.\n", objective_value(m))
