@@ -1,6 +1,7 @@
 import sys
 import re
 import random
+import time
 
 NO_IMPROVEMENT_LIMIT = 100
 
@@ -152,6 +153,7 @@ if __name__ == '__main__':
 
     # Do iterated local search
     print("Executing heuristic...")
+    start = time.time()
     while no_improvements < NO_IMPROVEMENT_LIMIT:
         new_s = local_search(s)
         no_improvements += 1
@@ -162,4 +164,6 @@ if __name__ == '__main__':
             agitation += 1
         agitate_solution()
         s = objective_function(x)
+    end = time.time()
+    print(end - start)
     print(f"Best solution: {best_s}")

@@ -67,7 +67,7 @@ println("Declaring constraints...")
 
 # Play against every other team exactly once
 for i in 1:n
-    for j in 1:n
+    for j in (i+1):n
         if i != j
             @constraint(m, sum(x[:,i,j]) == 1)
         end
@@ -91,7 +91,7 @@ for r in 1:n-1
 end
 
 # Set a time limit for the simulation
-set_time_limit_sec(m, 60.0)
+set_time_limit_sec(m, 600.0)
 
 # Run the solver
 println("Optimizing...")
